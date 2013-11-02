@@ -21,6 +21,7 @@
 
 cdef extern from "bloom.h":
     ctypedef unsigned int uint32_t
+    ctypedef unsigned long int uint64_t
 
     ctypedef struct redisContext:
         int err
@@ -30,23 +31,28 @@ cdef extern from "bloom.h":
         char *obuf
     
     ctypedef struct pyrebloomctxt:
-        uint32_t capacity
-        uint32_t bits
-        uint32_t hashes
-        float    error
-        uint32_t * seeds
-        unsigned char * key
-        redisContext * ctxt
+        uint32_t        capacity
+        uint32_t        hashes
+        uint32_t        num_keys
+        uint64_t        bits
+        double          error
+        uint32_t      * seeds
+        char          * key
+        char          * password
+        redisContext  * ctxt
+        char         ** keys
 
-    bint init_pyrebloom(pyrebloomctxt * ctxt, unsigned char * key, uint32_t capacity, float error, char* host, uint32_t port)
+    bint init_pyrebloom(pyrebloomctxt * ctxt, unsigned char * key,
+        uint32_t capacity, float error, char* host, uint32_t port,
+        char* password)
     bint free_pyrebloom(pyrebloomctxt * ctxt)
     
     bint add(pyrebloomctxt * ctxt, char * data, uint32_t len)
-    bint add_complete(pyrebloomctxt * ctxt, uint32_t count)
+    int add_complete(pyrebloomctxt * ctxt, uint32_t count)
     
     bint check(pyrebloomctxt * ctxt, char * data, uint32_t len)
-    bint check_next(pyrebloomctxt * ctxt)
+    int check_next(pyrebloomctxt * ctxt)
     
     bint delete(pyrebloomctxt * ctxt)
     
-    uint32_t hash(unsigned char * data, uint32_t len, uint32_t hash, uint32_t bits)
+    uint64_t hash(unsigned char * data, uint32_t len, uint64_t hash, uint64_t bits)

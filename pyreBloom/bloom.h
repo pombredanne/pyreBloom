@@ -30,15 +30,18 @@
 // And now for some redis stuff
 typedef struct {
 	uint32_t        capacity;
-	uint32_t        bits;
-	uint32_t        hashes;
-	float           error;
+    uint32_t        hashes;
+    uint32_t        num_keys;
+	uint64_t        bits;
+	double          error;
 	uint32_t      * seeds;
-	unsigned char * key;
+	char          * key;
+    char          * password;
 	redisContext  * ctxt;
+    char         ** keys;
 } pyrebloomctxt;
 
-int init_pyrebloom(pyrebloomctxt * ctxt, unsigned char * key, uint32_t capacity, double error, char* host, uint32_t port);
+int init_pyrebloom(pyrebloomctxt * ctxt, char * key, uint32_t capacity, double error, char* host, uint32_t port, char* password);
 int free_pyrebloom(pyrebloomctxt * ctxt);
 
 int add(pyrebloomctxt * ctxt, const char * data, uint32_t len);
@@ -49,6 +52,6 @@ int check_next(pyrebloomctxt * ctxt);
 
 int delete(pyrebloomctxt * ctxt);
 
-uint32_t hash(const char * data, uint32_t len, uint32_t hash, uint32_t bits);
+uint64_t hash(const char* data, uint32_t len, uint64_t seed, uint64_t bits);
 
 #endif
